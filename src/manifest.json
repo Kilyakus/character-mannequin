@@ -1,0 +1,24 @@
+{
+  "kind": "character",
+  "id": "capsule-mannequin",
+  "name": "Капсульный манекен · самостоятельный плагин",
+  "entry": "character.js",
+  "default": false,
+  "order": 1,
+  "builtInAlias": "builtin-capsule",
+  "api": {
+    "entry": "index.js",
+    "engineAgnostic": true,
+    "requires": ["three"],
+    "exports": [
+      "createCapsuleMannequin",
+      "buildCapsuleMannequinModel",
+      "CAPSULE_MANNEQUIN_BONES",
+      "CAPSULE_MANNEQUIN_BONE_MAP",
+      "CAPSULE_MANNEQUIN_BONE_PARTS",
+      "buildCapsuleMannequinBindings",
+      "capsulePaletteFromColor",
+      "resolveMaterialPalette"
+    ]
+  }
+}

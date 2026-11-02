@@ -1,0 +1,53 @@
+/* Приложение и доки — из Preparatorio. Здесь только содержимое демонстрации. */
+.b-app { min-width:0; }
+.mannequin-stage-body { position:relative; flex:1 1 auto; min-height:0; padding:0; overflow:hidden; }
+.mannequin-viewport { position:absolute; inset:0; }
+.mannequin-viewport canvas { display:block; width:100%; height:100%; touch-action:none; }
+.mannequin-viewport-actions { position:absolute; z-index:2; left:8px; right:8px; bottom:8px; display:flex; gap:6px; align-items:center; justify-content:space-between; pointer-events:none; }
+.mannequin-viewport-actions button { pointer-events:auto; padding:5px 8px; }
+.mannequin-viewport-hint { color:var(--b-text-dim); font-size:10px; text-shadow:0 1px 2px #000; }
+.mannequin-structure { overflow:auto; min-height:0; padding:4px; color:var(--b-text-dim); font-size:11px; }
+.mannequin-tree-head { color:var(--b-text-faint); padding:5px 4px; }
+.mannequin-tree-row,.mannequin-tree-group>summary { padding:5px 6px; border:1px solid transparent; }
+.mannequin-tree-row.active { color:var(--b-text); background:var(--b-accent-soft); border-color:var(--b-accent); border-radius:var(--b-radius); }
+.mannequin-tree-group { padding-left:8px; }
+.mannequin-bone { padding-left:11px; }
+.mannequin-bone summary { cursor:pointer; padding:3px 2px; }
+.mannequin-bone.leaf > summary { list-style:none; padding-left:12px; cursor:default; }
+.mannequin-card { border:1px solid var(--b-border); border-radius:var(--b-radius); background:var(--b-panel); padding:8px; }
+.mannequin-card .prep-note { margin:5px 0 8px; }
+.mannequin-stats { display:grid; grid-template-columns:1fr 1fr; gap:2px; }
+.mannequin-stat { padding:7px; background:var(--b-widget); display:flex; justify-content:space-between; gap:5px; }
+.mannequin-stat span { color:var(--b-text-dim); }
+.mannequin-color-row { display:flex; align-items:center; gap:6px; }
+.mannequin-color-row input { width:38px; height:25px; padding:2px; background:var(--b-widget); border:1px solid var(--b-border); }
+.mannequin-color-row output { flex:1; color:var(--b-text-dim); font-variant-numeric:tabular-nums; }
+.mannequin-color-row .prep-button { flex:0 0 auto; }
+@media(max-width:650px){.mannequin-viewport-hint { display:none; }}
+.mannequin-view-top { position:absolute; z-index:2; top:8px; left:8px; right:8px; display:flex; flex-wrap:wrap; gap:4px; pointer-events:none; }
+.mannequin-view-top button { pointer-events:auto; padding:4px 7px; }
+.mannequin-view-top [aria-pressed="true"] { background:var(--b-accent-soft); border-color:var(--b-accent); }
+.mannequin-input { width:100%; min-width:0; padding:5px 6px; color:var(--b-text); background:var(--b-widget); border:1px solid var(--b-border); font:inherit; }
+.mannequin-structure .mannequin-input { margin:6px 0; }
+.mannequin-bone summary { display:list-item; }
+.mannequin-bone-button { border:0; background:transparent; color:inherit; padding:2px 4px; font:inherit; cursor:pointer; text-align:left; }
+.mannequin-bone-button:hover,.mannequin-bone-button.active { color:var(--b-text); background:var(--b-accent-soft); }
+.mannequin-results { display:flex; flex-direction:column; align-items:stretch; }
+.mannequin-section-label { margin:14px 0 6px; color:var(--b-text-dim); font-size:11px; }
+.mannequin-button-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:4px; }
+.mannequin-button-grid button { min-width:0; padding:5px 4px; }
+.mannequin-pose-status { margin:8px 0; color:var(--b-text-dim); font-size:11px; }
+.mannequin-selected { display:block; overflow-wrap:anywhere; }
+.mannequin-pose-fields { margin-top:8px; }
+.mannequin-pose-fields[hidden] { display:none; }
+.mannequin-axis { display:block; margin:9px 0; }
+.mannequin-axis-heading { display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.mannequin-number { width:64px; min-width:0; border:1px solid var(--b-border); background:var(--b-widget); color:var(--b-text); padding:3px; text-align:right; font:inherit; }
+.mannequin-range { width:100%; height:14px; margin:5px 0 0; appearance:none; background:var(--b-widget); border:1px solid var(--b-border); border-radius:0; }
+.mannequin-range::-webkit-slider-thumb { appearance:none; width:3px; height:14px; background:#eee; cursor:ew-resize; }
+.mannequin-range::-moz-range-thumb { width:3px; height:14px; background:#eee; border:0; border-radius:0; cursor:ew-resize; }
+.mannequin-space { display:grid; gap:5px; margin:10px 0; }
+@media(max-width:650px){.mannequin-view-top{gap:2px}.mannequin-view-top button{padding:3px 5px}}
+
+.mannequin-relations { display:flex; flex-direction:column; align-items:flex-start; gap:4px; margin:8px 0; }
+.mannequin-relations button { max-width:100%; overflow:hidden; text-overflow:ellipsis; }

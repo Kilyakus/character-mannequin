@@ -1,0 +1,21 @@
+import { chromium } from 'playwright';
+import assert from 'node:assert/strict';
+const browser=await chromium.launch({headless:true,args:['--no-sandbox','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+const page=await browser.newPage({viewport:{width:1280,height:800}}),errors=[];page.on('pageerror',error=>errors.push(error.stack));
+await page.addInitScript(()=>{if(!sessionStorage.getItem('mannequin-test')){localStorage.clear();sessionStorage.setItem('mannequin-test','yes')}});
+await page.goto(process.env.DEMO_URL||'http://localhost:5180/');await page.waitForFunction(()=>window.__MANNEQUIN_DEMO__?.studio&&__MANNEQUIN_DEMO__.body.shellCount===78,null,{timeout:90000});
+assert.equal(await page.locator('#viewport canvas').count(),1);assert.equal(await page.locator('.lm-DockPanel').count(),1);
+for(const label of ['Структура','Просмотр','Свойства','Консоль']) assert.ok(await page.locator('.lm-TabBar-tabLabel').filter({hasText:label}).count(),label);
+assert.equal(await page.locator('.mannequin-stat').count(),4);assert.equal(await page.locator('.mannequin-bone').count(),85);
+await page.getByRole('tab',{name:'Палитра',exact:true}).click();const input=page.locator('#color');assert.equal(await input.isVisible(),true);
+const original=await page.evaluate(()=>__MANNEQUIN_DEMO__.body.mesh.material[0].color.getHex());
+await input.evaluate(el=>{el.value='#ff2200';el.dispatchEvent(new Event('input',{bubbles:true}))});assert.equal(await page.locator('#colorValue').textContent(),'#FF2200');assert.notEqual(await page.evaluate(()=>__MANNEQUIN_DEMO__.body.mesh.material[0].color.getHex()),original);
+await page.locator('#resetColor').click();assert.equal(await page.locator('#colorValue').textContent(),'#4C73C9');
+const before=await page.evaluate(()=>__MANNEQUIN_DEMO__.camera.position.toArray());const rect=await page.locator('canvas').boundingBox();await page.mouse.move(rect.x+rect.width*.48,rect.y+rect.height*.4);await page.mouse.down();await page.mouse.move(rect.x+rect.width*.61,rect.y+rect.height*.46,{steps:8});await page.mouse.up();await page.evaluate(()=>__MANNEQUIN_DEMO__.controls.update());assert.notDeepEqual(await page.evaluate(()=>__MANNEQUIN_DEMO__.camera.position.toArray()),before);await page.locator('#resetCamera').click();assert.ok((await page.evaluate(()=>__MANNEQUIN_DEMO__.camera.position.toArray())).every((x,i)=>Math.abs(x-[2.15,1.8,3.15][i])<.01));
+// Real Preparatorio tools can be detached and returned without losing live controls.
+await page.evaluate(()=>{const s=__MANNEQUIN_DEMO__.studio,w=s.createToolWidget('palette');s.dock.addWidget(w,{mode:'split-right',ref:s.panels.viewport});s.dock.activateWidget(w)});
+assert.equal(await input.isVisible(),true);await input.evaluate(el=>{el.value='#0088ff';el.dispatchEvent(new Event('input',{bubbles:true}))});assert.equal(await page.locator('#colorValue').textContent(),'#0088FF');
+assert.equal(await page.evaluate(()=>__MANNEQUIN_DEMO__.studio.returnTool('palette')),true);assert.equal(await input.isVisible(),true);assert.equal(await input.inputValue(),'#0088ff');
+await page.reload();await page.waitForFunction(()=>window.__MANNEQUIN_DEMO__?.studio,null,{timeout:90000});assert.ok(await page.locator('.lm-TabBar-tabLabel').filter({hasText:'Просмотр'}).count());
+await page.setViewportSize({width:650,height:700});assert.equal(await page.locator('canvas').isVisible(),true);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth),true);
+assert.deepEqual(errors,[]);console.log('Preparatorio dock, scene, palette, detached tools, persistence and responsive layout passed');await browser.close();

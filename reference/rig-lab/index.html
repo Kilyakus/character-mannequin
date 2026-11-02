@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1721" />
+  <meta name="description" content="Интерактивная лаборатория поз для капсульного персонажа на оригинальном скелете из 85 костей." />
+  <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+  <title>Capsule / Rig Lab — Лаборатория поз</title>
+</head>
+<body>
+  <div id="app" class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-icon" aria-hidden="true"><span class="brand-core"></span></span>
+        <div class="brand-type"><strong>CAPSULE<span class="brand-slash">/</span>LAB</strong><small>ИНТЕРАКТИВНЫЙ РИГ</small></div>
+      </div>
+      <div class="header-center"><span class="online-pulse"></span><span>СЦЕНА АКТИВНА</span><i></i><span>CAP-01&nbsp; / &nbsp;ANIME BASE TALL</span></div>
+      <div class="header-actions">
+        <button type="button" id="mobileBonesBtn" class="header-btn mobile-only" aria-label="Открыть список костей">Кости</button>
+        <button type="button" id="mobileInspectorBtn" class="header-btn mobile-only" aria-label="Открыть инспектор">Параметры</button>
+        <button type="button" id="helpBtn" class="header-btn icon-btn" aria-label="Как пользоваться" title="Как пользоваться">?</button>
+        <button type="button" id="headerExport" class="header-export">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2.7v10m0 0 3.3-3.3M10 12.7 6.7 9.4M3 14.5v2.2c0 .5.4.9.9.9h12.2c.5 0 .9-.4.9-.9v-2.2" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Сохранить позу</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside id="bonesPanel" class="bones-panel">
+        <div class="panel-heading"><span>СТРУКТУРА СКЕЛЕТА</span><span id="boneCount" class="count-pill">—</span></div>
+        <div class="bone-search">
+          <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.7" cy="8.7" r="5.6" stroke="currentColor" stroke-width="1.5"/><path d="m13 13 4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <input id="boneSearch" type="search" placeholder="Найти кость..." autocomplete="off" aria-label="Поиск кости" />
+          <kbd>/</kbd>
+        </div>
+        <p class="panel-caption">Выберите кость в списке или нажмите на сегмент персонажа.</p>
+        <div id="boneTree" class="bone-tree" aria-label="Список костей"><div class="tree-loading">Загружаем иерархию...</div></div>
+        <div class="bones-footer">
+          <span class="footer-symbol" aria-hidden="true">◎</span>
+          <div><strong>ОРИГИНАЛЬНЫЙ СКЕЛЕТ</strong><span>85 костей · anime-base-tall.fbx</span></div>
+          <span class="footer-check" aria-label="Скелет проверен">✓</span>
+        </div>
+      </aside>
+
+      <main id="stage" class="stage">
+        <canvas id="sceneCanvas" aria-label="Интерактивная 3D-сцена с персонажем"></canvas>
+        <div class="stage-grain" aria-hidden="true"></div>
+        <div class="viewport-top">
+          <div class="view-label"><span class="crosshair">✣</span><span>VIEWPORT <b>/</b> PERSPECTIVE</span><small id="viewportStatus">ЗАГРУЗКА МОДЕЛИ</small></div>
+          <div class="viewport-tools">
+            <button type="button" id="jointToggle" class="viewport-tool is-active" aria-pressed="true" title="Показать или скрыть точки выбора костей">
+              <span class="tool-dot"></span><span>Суставы</span>
+            </button>
+            <button type="button" id="lineToggle" class="viewport-tool" aria-pressed="false" title="Рентген скелета">
+              <svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="4" cy="4" r="1.25"/><circle cx="13.5" cy="4" r="1.25"/><circle cx="9" cy="13.5" r="1.25"/><path d="M5 4h7.2M4.6 5.1l3.7 7.2M12.9 5.1l-3.3 7.2" stroke="currentColor" stroke-width="1.25"/></svg>
+              <span>Скелет</span>
+            </button>
+            <button type="button" id="gridToggle" class="viewport-tool is-active" aria-pressed="true" title="Показать или скрыть сетку">
+              <svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M2 5.5h14M2 10h14M2 14.5h14M5.5 2v14M10 2v14M14.5 2v14" stroke="currentColor" stroke-width="1.15"/></svg>
+              <span>Сетка</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="camera-switch" role="group" aria-label="Ракурс камеры">
+          <button type="button" class="camera-btn is-active" data-view="angle" title="Три четверти">3/4</button>
+          <button type="button" class="camera-btn" data-view="front" title="Спереди">ФАС</button>
+          <button type="button" class="camera-btn" data-view="side" title="Сбоку">БОК</button>
+        </div>
+        <div class="side-notation">DRAG TO ORBIT <span>·</span> SCROLL TO ZOOM</div>
+        <div id="boneTooltip" class="bone-tooltip" role="tooltip"></div>
+        <div class="axis-key" aria-hidden="true"><span class="axis-x">X</span><span class="axis-y">Y</span><span class="axis-z">Z</span></div>
+
+        <div id="loadingOverlay" class="loading-overlay">
+          <div class="loader-mark"><span></span><span></span><span></span></div>
+          <strong>Подготавливаем скелет</strong>
+          <p>Капсульный персонаж · 85 костей</p>
+          <div class="loading-track"><span id="loadingProgress"></span></div>
+          <small id="loadingMessage">Загрузка 3D-модели...</small>
+        </div>
+
+        <div class="stage-bottom">
+          <div class="preset-shelf">
+            <div class="preset-header"><span>БЫСТРЫЕ ПОЗЫ</span><span id="poseName" class="preset-status">ИСХОДНАЯ ПОЗА</span></div>
+            <div class="preset-buttons" role="group" aria-label="Готовые позы">
+              <button type="button" data-preset="rest" class="preset-chip">✣ <span>Т-поза</span></button>
+              <button type="button" data-preset="relaxed" class="preset-chip is-active">◌ <span>Спокойно</span></button>
+              <button type="button" data-preset="hello" class="preset-chip">↗ <span>Привет</span></button>
+              <button type="button" data-preset="step" class="preset-chip">↝ <span>Шаг</span></button>
+            </div>
+          </div>
+          <div class="control-hint">
+            <div><span class="hint-icon">↖</span> <strong>Клик</strong> выбрать кость</div>
+            <span class="hint-separator"></span>
+            <div><span class="hint-icon">◯</span> <strong>Потянуть кольцо</strong> повернуть</div>
+            <span class="hint-separator hint-hide-mobile"></span>
+            <div class="hint-hide-mobile"><span class="hint-icon">⤾</span> <strong>Пустое место</strong> вращать камеру</div>
+            <button type="button" id="fitView" class="fit-button" title="Вернуть общий вид (F)">⤢ <span>Вписать</span></button>
+          </div>
+        </div>
+      </main>
+
+      <aside id="inspectorPanel" class="inspector-panel">
+        <div class="panel-heading"><span>ИНСПЕКТОР КОСТИ</span><span class="inspector-status">● <span>POSE MODE</span></span></div>
+        <div id="emptySelection" class="empty-selection" hidden><span class="empty-glyph">◎</span><h2>Выберите кость</h2><p>Нажмите на сегмент персонажа, точку сустава или имя кости слева.</p></div>
+        <div id="boneInspector">
+          <div class="selected-card">
+            <div class="selected-upper"><span class="selected-icon">✣</span><span class="selected-counter" id="selectedCounter">КОСТЬ — / 85</span></div>
+            <h1 id="selectedFriendly">—</h1>
+            <div class="selected-meta"><code id="selectedRaw">—</code><span id="selectedSide">ПОЗА</span></div>
+          </div>
+          <section class="inspector-section rotation-section">
+            <div class="section-heading"><span>ВРАЩЕНИЕ КОСТИ</span><span class="section-index">01 / 03</span></div>
+            <p class="section-explain">Тяните цветные кольца на модели или задайте точный угол относительно исходной позы.</p>
+            <div class="space-switch"><span>СИСТЕМА КООРДИНАТ</span><div class="segmented-control" role="group" aria-label="Система координат"><button type="button" data-space="local" class="is-active">Локальная</button><button type="button" data-space="world">Мировая</button></div></div>
+            <div class="axes-panel">
+              <div class="axis-row axis-row-x"><div class="axis-title"><span class="axis-badge">X</span><span>Ось X</span></div><input id="sliderX" type="range" min="-180" max="180" step="1" value="0" aria-label="Вращение X"/><label class="axis-number"><input id="numberX" type="number" min="-180" max="180" step="1" value="0" aria-label="Угол X"/><span>°</span></label></div>
+              <div class="axis-row axis-row-y"><div class="axis-title"><span class="axis-badge">Y</span><span>Ось Y</span></div><input id="sliderY" type="range" min="-180" max="180" step="1" value="0" aria-label="Вращение Y"/><label class="axis-number"><input id="numberY" type="number" min="-180" max="180" step="1" value="0" aria-label="Угол Y"/><span>°</span></label></div>
+              <div class="axis-row axis-row-z"><div class="axis-title"><span class="axis-badge">Z</span><span>Ось Z</span></div><input id="sliderZ" type="range" min="-180" max="180" step="1" value="0" aria-label="Вращение Z"/><label class="axis-number"><input id="numberZ" type="number" min="-180" max="180" step="1" value="0" aria-label="Угол Z"/><span>°</span></label></div>
+            </div>
+            <div class="axis-legend"><span><i class="legend-x"></i> X / красная</span><span><i class="legend-y"></i> Y / зелёная</span><span><i class="legend-z"></i> Z / синяя</span></div>
+            <div class="selected-actions"><button type="button" id="resetBone" class="soft-button">↺ <span>Сбросить кость</span></button><button type="button" id="focusBone" class="soft-button">⌖ <span>Фокус</span></button></div>
+          </section>
+          <section class="inspector-section detail-section">
+            <div class="section-heading"><span>ИЕРАРХИЯ</span><span class="section-index">02 / 03</span></div>
+            <div class="detail-pair"><span>Родитель</span><button type="button" id="parentBone" title="Выбрать родительскую кость">—</button></div>
+            <div class="detail-pair"><span>Дочерние кости</span><strong id="childCount">—</strong></div>
+            <div class="detail-pair"><span>Статус</span><strong class="detail-positive">Готова к позингу</strong></div>
+          </section>
+        </div>
+        <section class="inspector-section pose-section">
+          <div class="section-heading"><span>РАБОТА С ПОЗОЙ</span><span class="section-index">03 / 03</span></div>
+          <p class="section-explain">Экспортируйте углы всех костей и продолжите редактирование позже.</p>
+          <div class="pose-actions"><button type="button" id="exportPose" class="primary-action">↓ <span>Скачать JSON</span></button><button type="button" id="importPose" class="secondary-action">↑ <span>Загрузить позу</span></button></div>
+          <input type="file" id="poseFile" accept="application/json,.json" hidden />
+          <button type="button" id="resetAll" class="danger-action">↺ Сбросить все кости к Т-позе</button>
+        </section>
+        <div class="inspector-footer"><span class="tiny-live"></span> РИГ ГОТОВ К РЕДАКТИРОВАНИЮ <span>v1.0</span></div>
+      </aside>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="helpModal" class="modal-backdrop" hidden>
+      <div class="help-dialog" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
+        <button type="button" id="closeHelp" class="modal-close" aria-label="Закрыть">×</button>
+        <div class="dialog-eyebrow">CAPSULE LAB / ГИД</div>
+        <h2 id="helpTitle">Поиграйте со скелетом</h2>
+        <p>Здесь загружен тот же капсульный персонаж, привязанный к оригинальным 85 костям. Это живая 3D-модель, не видео.</p>
+        <div class="help-steps">
+          <div><span>01</span><strong>Выберите кость</strong><p>Кликните по детали модели, маркеру сустава или имени кости слева.</p></div>
+          <div><span>02</span><strong>Поверните её</strong><p>Потяните цветное кольцо вокруг сустава или укажите углы X / Y / Z справа. Пустое место — вращение камеры.</p></div>
+          <div><span>03</span><strong>Сохраните результат</strong><p>Попробуйте готовые позы и скачайте JSON для последующей загрузки. Поза также автоматически сохраняется в браузере.</p></div>
+        </div>
+        <div class="shortcut-list"><kbd>/</kbd> поиск <kbd>F</kbd> общий вид <kbd>R</kbd> сброс кости <kbd>Esc</kbd> снять выбор</div>
+        <button type="button" id="gotIt" class="modal-primary">Понятно, начать →</button>
+      </div>
+    </div>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

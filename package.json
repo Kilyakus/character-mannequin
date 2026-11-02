@@ -1,0 +1,47 @@
+{
+  "name": "character-mannequin",
+  "version": "1.0.0",
+  "description": "Procedural, rigged capsule mannequin for Three.js hosts",
+  "type": "module",
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./character": "./src/character.js",
+    "./manifest.json": "./src/manifest.json"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kilyakus/character-mannequin.git"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "peerDependencies": {
+    "three": ">=0.160.0 <1"
+  },
+  "peerDependenciesMeta": {
+    "three": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "nodejs-preparatorio": "git+https://github.com/Kilyakus/nodejs-preparatorio.git#7e7b37860294c24e4b95f109b230ec2d764c0ce6",
+    "playwright": "^1.64.1",
+    "three": "^0.186.1",
+    "vite": "^7.3.7"
+  },
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "test": "node --test tests",
+    "preview": "vite preview --host 0.0.0.0",
+    "test:browser": "node tests/browser/demo-regression.mjs && node tests/browser/pose-regression.mjs"
+  }
+}
